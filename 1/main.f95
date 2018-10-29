@@ -35,13 +35,17 @@ end subroutine
 subroutine T_ri_calc(T,T_crit,T_ri,n)
     integer n
     real ::T_ri(n),T(n),T_crit(n)
-
      T_ri=T/T_crit
 end subroutine
 
-subroutine omega_a_calc(T_ri,omega,n,Omega_A)
+subroutine omega_a_calc(T_ri,omega,n,Omega_A,Omega_A_0)
     integer n
-    real ::T_ri(n),omega(n),Omega_A(n)
-
-
+    real ::T_ri(n),omega(n),Omega_A(n),Omega_A_0
+    real temp_calc(n)
+    temp_calc=0.37464+1.54226*omega
+    temp_calc=temp_calc-0.26992*omega*omega
+    temp_calc=temp_calc*(1-sqrt(T_ri))
+    temp_calc=temp_calc+1
+    temp_calc=temp_calc*temp_calc
+    Omega_A=Omega_A_0*temp_calc
 end subroutine
