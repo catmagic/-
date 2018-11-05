@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include<math.h>
 using namespace std;
 
 double convert_F_to_K(double T_f)
@@ -25,6 +25,22 @@ void   normalization_T(double* T,double * T_crit,double *T_r ,int n)
     for(int i=0; i<n ;i++)
     {
         T_r[i]=T[i]/T_crit[i];
+    }
+}
+void Omega_a_calc(double Omega_a0,double* omega,double* Omega_a,double* T_r, int n)
+{
+    double temp_calc;
+    for(int i=0; i<n;i++)
+    {
+        temp_calc=1+(0.37464+1.54226*omega[i]-0.26992*omega[i]*omega[i])*(1-sqrt(T_r[i]));
+        Omega_a[i]=Omega_a0*temp_calc*temp_calc;
+    }
+}
+void Omega_b_calc(double Omega_b0,double* Omega_a, int n)
+{
+    for(int i=0; i<n;i++)
+    {
+        Omega_a[i]=Omega_b0;
     }
 }
 
