@@ -43,18 +43,47 @@ void Omega_b_calc(double Omega_b0,double* Omega_a, int n)
         Omega_a[i]=Omega_b0;
     }
 }
-void calc_A_i(double* Omega_A,double* P_r,double* T_r,double *A ,int n)
+void calc_A(double** A_i_j ,double *c,double &A,int n)
 {
+    A=0;
     for(int i=0; i<n;i++)
     {
-        A[i]=Omega_A[i]*P_r[i]/(T_r[i]*T_r[i]);
+        for(int j=0; j<n;j++)
+        {
+            A+=A_i_j[i][j]*c[i]*c[j];
+        }
     }
 }
-void calc_B_i(double* Omega_B,double* P_r,double* T_r,double *B ,int n)
+void calc_B(double* B_i ,double *c,double &B,int n)
+{
+    B=0;
+    for(int i=0; i<n;i++)
+    {
+        B+=B_i[i]*c[i];
+    }
+}
+void calc_A_i(double* Omega_A,double* P_r,double* T_r,double *A_i ,int n)
 {
     for(int i=0; i<n;i++)
     {
-        B[i]=Omega_B[i]*P_r[i]/T_r[i];
+        A_i[i]=Omega_A[i]*P_r[i]/(T_r[i]*T_r[i]);
+    }
+}
+void calc_B_i(double* Omega_B,double* P_r,double* T_r,double *B_i ,int n)
+{
+    for(int i=0; i<n;i++)
+    {
+        B_i[i]=Omega_B[i]*P_r[i]/T_r[i];
+    }
+}
+void calc_A_i_j(double** Betta,double* A_i,double** A_i_j ,int n)
+{
+    for(int i=0; i<n;i++)
+    {
+        for(int j=0; j<n;j++)
+        {
+            A_i_j[i][j]=(1-Betta[i][j])*sqrt((A_i[i]*A_i[j]));
+        }
     }
 }
 
