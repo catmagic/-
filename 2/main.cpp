@@ -43,6 +43,20 @@ void Omega_b_calc(double Omega_b0,double* Omega_a, int n)
         Omega_a[i]=Omega_b0;
     }
 }
+void calc_A_i(double* Omega_A,double* P_r,double* T_r,double *A ,int n)
+{
+    for(int i=0; i<n;i++)
+    {
+        A[i]=Omega_A[i]*P_r[i]/(T_r[i]*T_r[i]);
+    }
+}
+void calc_B_i(double* Omega_B,double* P_r,double* T_r,double *B ,int n)
+{
+    for(int i=0; i<n;i++)
+    {
+        B[i]=Omega_B[i]*P_r[i]/T_r[i];
+    }
+}
 
 int main()
 {
