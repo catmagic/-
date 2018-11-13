@@ -1,5 +1,6 @@
 #include <iostream>
 #include<math.h>
+#include <complex>
 using namespace std;
 
 double convert_F_to_K(double T_f)
@@ -86,7 +87,26 @@ void calc_A_i_j(double** Betta,double* A_i,double** A_i_j ,int n)
         }
     }
 }
-
+void cube_root(complex<double> a,complex<double> root[3])
+{
+ double angle=arg(a),radius=abs(a),rotation=1;
+ if(angle<0.0){rotation=-1;}
+ root[0]=polar(cbrt(radius),angle/3.0);
+ root[1]=polar(cbrt(radius),(angle+rotation*2*M_PI)/3.0);
+ root[2]=polar(cbrt(radius),(angle-rotation*2*M_PI)/3.0);
+}
+void cube_solver(double E2,double E1,double E0,double root[3],int count_double_root)
+{
+    double p,q;
+    p=(3.0*E1-E2*E2)/3.0;                   //canonical form
+    q=(2.0*E2*E2*E2-9.0*E2*E1+27.0*E0)/27.0;//cube equation
+    double Q;
+    Q=(p/3.0)*(p/3.0)*(p/3.0)+(q/2.0)*(q/2.0);
+    if(abs(Q)<1e-18)//Q=0
+    {
+        if()
+    }
+}
 int main()
 {
     cout << "Hello world!" << endl;
@@ -94,6 +114,13 @@ int main()
     p[0]=1.0;
     p_crit[0]=4.0;
     normalization_P(p,p_crit,p_r,1);
+    complex<double> a,root[3];
+    a.real()=0.0;
+    a.imag()=-1.0;
+    cube_root(a,root);
+    cout<<root[0].real()<<"   "<<root[0].imag()<<'\n';
+    cout<<root[1].real()<<"   "<<root[1].imag()<<'\n';
+    cout<<root[2].real()<<"   "<<root[2].imag()<<'\n';
     cout<<p_r[0];
     return 0;
 }
