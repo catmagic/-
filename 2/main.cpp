@@ -127,7 +127,33 @@ void cube_solver(double E2,double E1,double E0,double root[3],int count_double_r
             root[2]=-temp_root1[1].real()-temp_root1[2].real()-E2/3.0;
         }
     }
+    else
+    {
+        if(Q>0.0)
+        {
+            //1 real ,2 complex root
+            count_double_root=1;
+            root[0]=cbrt((-q/2.0)+sqrt(Q))+cbrt((-q/2.0)-sqrt(Q))-E2/3.0;
+            root[1]=cbrt((-q/2.0)+sqrt(Q))+cbrt((-q/2.0)-sqrt(Q))-E2/3.0;
+            root[2]=cbrt((-q/2.0)+sqrt(Q))+cbrt((-q/2.0)-sqrt(Q))-E2/3.0;
+        }
+        else
+        {
+            //3 real different root
+            count_double_root=3;
+            a.real()=-q/2.0;
+            a.imag()=sqrt((-Q));
+            cube_root(a,temp_root1);
+            a.real()=-q/2.0;
+            a.imag()=-sqrt((-Q));
+            cube_root(a,temp_root2);
+            root[0]=temp_root1[0].real()+temp_root2[0].real()-E2/3.0;
+            root[1]=temp_root1[1].real()+temp_root2[1].real()-E2/3.0;
+            root[2]=temp_root1[2].real()+temp_root2[2].real()-E2/3.0;
+        }
+    }
 }
+//void phi(double* c,int n)
 int main()
 {
     cout << "Hello world!" << endl;
