@@ -2,7 +2,7 @@
 #include<math.h>
 #include <complex>
 using namespace std;
-
+#define  EPSILON 1e-10
 double convert_F_to_K(double T_f)
 {
     return (T_f-32.0)*5.0/9.0+273.15;
@@ -102,22 +102,49 @@ void cube_solver(double E2,double E1,double E0,double root[3],int count_double_r
     q=(2.0*E2*E2*E2-9.0*E2*E1+27.0*E0)/27.0;//cube equation
     double Q;
     Q=(p/3.0)*(p/3.0)*(p/3.0)+(q/2.0)*(q/2.0);
-    if(abs(Q)<1e-18)//Q=0
+    complex<double> temp_root1[3],temp_root2[3],a;
+    if(abs(Q)<EPSILON)//Q=0
     {
-        if()
+        //matching roots
+        if((abs(p)<EPSILON)&&(abs(q)<EPSILON))
+        {
+            //3 matching roots
+            count_double_root=3;
+            root[0]=-E2/3.0;
+            root[1]=-E2/3.0;
+            root[2]=-E2/3.0;
+        }
+        else
+        {
+            //2 matching roots
+            count_double_root=3;
+            a.real()=q/2.0;
+            a.imag()=0.0;
+            cube_root(a,temp_root1);
+            cube_root(a,temp_root2);
+            root[0]=-2.0*cbrt((q/2.0))-E2/3.0;
+            root[1]=-temp_root1[1].real()-temp_root1[2].real()-E2/3.0;
+            root[2]=-temp_root1[1].real()-temp_root1[2].real()-E2/3.0;
+        }
     }
 }
 int main()
 {
     cout << "Hello world!" << endl;
     double p[1],p_crit[1],p_r[1];
+    int i=0;
     p[0]=1.0;
     p_crit[0]=4.0;
     normalization_P(p,p_crit,p_r,1);
     complex<double> a,root[3];
+    double root_d[3];
     a.real()=0.0;
     a.imag()=-1.0;
     cube_root(a,root);
+     cube_solver(-8.0,21.0,-18.0,root_d,i);
+      cout<<root_d[0]<<"   "<<'\n';
+    cout<<root_d[1]<<"   "<<'\n';
+    cout<<root_d[2]<<"   "<<'\n';
     cout<<root[0].real()<<"   "<<root[0].imag()<<'\n';
     cout<<root[1].real()<<"   "<<root[1].imag()<<'\n';
     cout<<root[2].real()<<"   "<<root[2].imag()<<'\n';
