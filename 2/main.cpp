@@ -276,7 +276,7 @@ void practical_liq(double* z,double *K,double V,double** practical_x_practical_K
         }
     }
 }
-void practical_gas(double* z,double *K,double V,double** practical_x_practical_K,int n)
+void practical_gas(double* z,double *K,double V,double** practical_y_practical_K,int n)
 {
     double sum=0.0;
     double temp;
@@ -289,11 +289,54 @@ void practical_gas(double* z,double *K,double V,double** practical_x_practical_K
         temp=z[i]/((1+(K[i]-1)*V)*(1+(K[i]-1)*V));
         for(int j=0;j<n;j++)
         {
-            practical_x_practical_K[i][j]=temp*(1-V)*delta(i,j)-K[i]*(K[i]-1)*temp/sum);
+            practical_y_practical_K[i][j]=temp*((1-V)*delta(i,j)-K[i]*(K[i]-1)*temp/sum);
         }
     }
 }
-//void practical_ln_phi(double )
+void practical_Z(double Z,double M1,double M2,double E2,double E1,double A,double B,double C,double *B_i,double *S_i,double *practical_Z_practical_C,int n)
+{
+    for(int i=0;i<n ; i++)
+    {
+        double dE2_dc,dE1_dc,dE0_dc;
+        dE2_dc=(M1+M2-1.0)*B_i[i]-1.0;
+        dE1_dc=2.0*S_i[i]+2.0*M1*M2*B*B_i[i]-(M1+M2)*(B_i[i]*(B+C)+B*(B_i[i]+1.0));
+        dE0_dc=-2.0*S_i[i]*B-A*B_i[i];-M1*M2*(2.0*B*B_i[i]*(B+C)+B*B*(B_i[i]+1.0));
+        practical_Z_practical_C[i]=-(Z*Z*dE2_dc+Z*dE1_dc+dE0_dc)/(3.0*Z*Z+2.0*Z*E2+E1);
+    }
+}
+void practical_ln_phi(double M1,double M2,double A,double B,double C,double Z,double *B_i,double* S_i,double *practical_Z_practical_C,double **practical_c_practical_K,double **practical_ln_phi_practical_K,double **A_ij, int n)
+{
+    double W1,W2,W3,W4,W5,W6,M;
+    double **practical_ln_phi_practical_c;
+    practical_ln_phi_practical_c        =   (double**)malloc(n*sizeof(double*));
+    W1=A/((M1-M2)*B);
+    M=log((Z+M2*B)/(Z+M1*B));
+    for(int i=0;i<n;i++)
+    {
+        practical_ln_phi_practical_c[i]         =   (double*)malloc(n*sizeof(double));
+        W5=2.0*S_i[i]/A-B_i[i]/B;
+        for(int j=0;j<n;j++)
+        {
+            W2=1.0/C-(practical_Z_practical_C[j]-B_i[j])/(Z-B);
+            W3=(practical_Z_practical_C[j]+M2*B_i[j])/(Z+M2*B)-(practical_Z_practical_C[j]+M1*B_i[j])/(Z+M1*B);
+            W4=M*(2.0*S_i[j]*B-A*B_i[j])/((M1-M2)*B*B);
+            W6=(B_i[i]*B_i[j])/(B*B);
+            practical_ln_phi_practical_c[i][j]=W2+W1*W5*W3+W4*W5+M*W1*((2.0*A*A_ij[i][j]-4.0*S_i[i]*S_i[j])/(A*A)+W6)-(Z-C)*W6+(B_i[i]/B)*(practical_Z_practical_C[j]-1);
+        }
+    }
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            practical_ln_phi_practical_K[i][j]=0.0;
+
+            for(int k=0;k<n;k++)
+            {
+                practical_ln_phi_practical_K[i][j]+=practical_ln_phi_practical_c[i][k]*practical_c_practical_K[k][j];
+            }
+        }
+    }
+}
 int main()
 {
     ifstream data;
