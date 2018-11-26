@@ -300,7 +300,7 @@ void practical_Z(double Z,double M1,double M2,double E2,double E1,double A,doubl
         double dE2_dc,dE1_dc,dE0_dc;
         dE2_dc=(M1+M2-1.0)*B_i[i]-1.0;
         dE1_dc=2.0*S_i[i]+2.0*M1*M2*B*B_i[i]-(M1+M2)*(B_i[i]*(B+C)+B*(B_i[i]+1.0));
-        dE0_dc=-2.0*S_i[i]*B-A*B_i[i];-M1*M2*(2.0*B*B_i[i]*(B+C)+B*B*(B_i[i]+1.0));
+        dE0_dc=-2.0*S_i[i]*B-A*B_i[i]-M1*M2*(2.0*B*B_i[i]*(B+C)+B*B*(B_i[i]+1.0));
         practical_Z_practical_C[i]=-(Z*Z*dE2_dc+Z*dE1_dc+dE0_dc)/(3.0*Z*Z+2.0*Z*E2+E1);
     }
 }
@@ -336,6 +336,67 @@ void practical_ln_phi(double M1,double M2,double A,double B,double C,double Z,do
             }
         }
     }
+}
+void A_linar_calc(double **A_linar_ij,double** practical_ln_phi_practical_K_liq,double **practical_ln_phi_practical_K_gas,double* K_i,int n)
+{
+    for(int i=0;i<n;i++)
+    {
+        for(int  j=0;j<n;j++)
+        {
+            A_linar_ij[i][j]=delta(i,j)+K_i[j]*(-practical_ln_phi_practical_K_liq[i][j]+practical_ln_phi_practical_K_gas[i][j]);
+        }
+    }
+}
+void B_linar_calc(double*B_linar_i, double* phi_liq,double* phi_gas,double* K_i,int n)
+{
+    for(int i=0;i<n;i++)
+    {
+        B_linar_i[i]=log(phi_liq[i]/(K_i[i]*phi_gas[i]));
+    }
+}
+void K_calk(double* K_i,double* tetta_i,int n)
+{
+    for(int i;i<n;i++)
+    {
+        K_i[i]*=exp(tetta_i[i]);
+    }
+}
+void Gauss(double** A,double* B,double* x,int n)
+{
+    for(int i=0;i<n;i++)
+    {
+
+            bool flag=false;
+            int k=i;
+            for(;(k<n)&&!flag;k++)
+            {
+                if(abs(A[k][i])>EPSILON){flag=true;}
+            }
+            double swap_temp;
+            double a,b;
+            for(int l=i;l<n;l++)
+            {
+                swap_temp=A[k][l];
+                A[k][l]=A[i][l];
+                A[i][l]=swap_temp;
+            }
+            swap_temp=B[k];
+            B[k]=B[i];
+            B[i]=swap_temp;
+            a=A[i][i];
+            for(k=i+1;k<n;k++)
+            {
+                b=A[k][i];
+                for(int l=i;l<n;l++)
+                {
+                    A[k][l]=a*A[k][l]-b*A[i][l];
+                }
+                B[k]=a*B[k]-b*B[i];
+            }
+
+    }
+
+
 }
 int main()
 {
