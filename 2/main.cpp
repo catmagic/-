@@ -221,7 +221,7 @@ void calc_phi(double C,double * S_i,double *B_i,double* Phi_i,double m1,double m
 
     for(int i=0;i<n;i++)
     {
-        Ln_phi_i[i]=log(C/(Z-B));+M*A/((m1-m2)*B)*(2.0*S_i[i]/A-B_i[i]/B)+B_i[i]*(Z-C)/B;
+        Ln_phi_i[i]=log(C/(Z-B))+M*A/((m1-m2)*B)*(2.0*S_i[i]/A-B_i[i]/B)+B_i[i]*(Z-C)/B;
         Phi_i[i]=exp(Ln_phi_i[i]);
     }
 }
@@ -255,10 +255,50 @@ void calc_si(double* si,double** A_ij,double *c,int n)
         }
     }
 }
+double delta(int i,int j)
+{
+    return double(i==j);
+}
+void practical_liq(double* z,double *K,double V,double** practical_x_practical_K,int n)
+{
+    double sum=0.0;
+    double temp;
+    for(int i=0;i<n;i++)
+    {
+        sum+=((K[i]-1)*(K[i]-1)*z[i])/((1+(K[i]-1)*V)*(1+(K[i]-1)*V));
+    }
+    for(int i=0;i<n;i++)
+    {
+        temp=z[i]/((1+(K[i]-1)*V)*(1+(K[i]-1)*V));
+        for(int j=0;j<n;j++)
+        {
+            practical_x_practical_K[i][j]=temp*(-V*delta(i,j)-(K[i]-1)*temp/sum);
+        }
+    }
+}
+void practical_gas(double* z,double *K,double V,double** practical_x_practical_K,int n)
+{
+    double sum=0.0;
+    double temp;
+    for(int i=0;i<n;i++)
+    {
+        sum+=((K[i]-1)*(K[i]-1)*z[i])/((1+(K[i]-1)*V)*(1+(K[i]-1)*V));
+    }
+    for(int i=0;i<n;i++)
+    {
+        temp=z[i]/((1+(K[i]-1)*V)*(1+(K[i]-1)*V));
+        for(int j=0;j<n;j++)
+        {
+            practical_x_practical_K[i][j]=temp*(1-V)*delta(i,j)-K[i]*(K[i]-1)*temp/sum);
+        }
+    }
+}
+//void practical_ln_phi(double )
 int main()
 {
     ifstream data;
     data.open("data.txt");
+    cout<<delta(1,0)<<" "<<delta(1,1);
     double *p,*p_crit,*p_r,*s_liq_i;
     double *t,*t_crit,*t_r,*s_gas_i;
     double *omega,*Omega_A,*Omega_B,*A_i,*B_i;
