@@ -363,15 +363,17 @@ void K_calk(double* K_i,double* tetta_i,int n)
 }
 void Gauss(double** A,double* B,double* x,int n)
 {
+    int W; cin>>W;
     for(int i=0;i<n;i++)
     {
+
 
             bool flag=false;
             int k=i;
             for(;(k<n)&&!flag;k++)
             {
                 if(abs(A[k][i])>EPSILON){flag=true;}
-            }
+            }k--;
             double swap_temp;
             double a,b;
             for(int l=i;l<n;l++)
@@ -380,6 +382,7 @@ void Gauss(double** A,double* B,double* x,int n)
                 A[k][l]=A[i][l];
                 A[i][l]=swap_temp;
             }
+
             swap_temp=B[k];
             B[k]=B[i];
             B[i]=swap_temp;
@@ -394,6 +397,25 @@ void Gauss(double** A,double* B,double* x,int n)
                 B[k]=a*B[k]-b*B[i];
             }
 
+
+    }
+
+    for(int i=n-1;i>=0;i--)
+    {
+
+        double a,b;
+        a=A[i][i];
+        for(int j=i-1;j>=0;j--)
+        {
+            b=A[j][i];
+            A[j][i]=A[j][i]-b*A[i][i]/a;
+            B[j]=B[j]-b/a*B[i];
+
+        }
+    }
+    for(int i=0;i<n;i++)
+    {
+        x[i]=B[i]/A[i][i];
     }
 
 
@@ -406,9 +428,9 @@ int main()
     double *p,*p_crit,*p_r,*s_liq_i;
     double *t,*t_crit,*t_r,*s_gas_i;
     double *omega,*Omega_A,*Omega_B,*A_i,*B_i;
-    double **A_ij,**Betta;
+    double **A_ij,**Betta,**A_linar;
     double A_liq=0.0,B_liq=0.0,A_gas=0.0,B_gas=0.0,C_liq,C_gas,temp,T,P,v=0.0,Omega_A0=0.457235529,Omega_B0=0.077796074;
-    double *x,*y,*z,*c,*k_i;
+    double *x,*y,*z,*c,*k_i,*B_linar,*x_solve;
     double m1,m2;
     double root_liq[3],root_gas[3];
     m1=1.0+sqrt(2.0);
@@ -417,6 +439,29 @@ int main()
     double E2_gas,E1_gas,E0_gas,z_gas;
     int n,count_root_gas,count_root_liq;
     double *phi_liq_i,*phi_gas_i;
+    A_linar     =   (double**)malloc(3*sizeof(double*));
+    A_linar[0]    =   (double*)malloc(3*sizeof(double));
+    A_linar[1]  =   (double*)malloc(3*sizeof(double));
+    A_linar[2]=   (double*)malloc(3*sizeof(double));
+    B_linar=   (double*)malloc(3*sizeof(double));
+    x_solve=   (double*)malloc(3*sizeof(double));
+    A_linar[0][0]=1;
+    A_linar[0][1]=2;
+    A_linar[0][2]=3;
+    A_linar[1][0]=0;
+    A_linar[1][1]=2;
+    A_linar[1][2]=3;
+    A_linar[2][0]=0;
+    A_linar[2][1]=0;
+    A_linar[2][2]=3;
+    B_linar[0]=1;
+    B_linar[1]=1;
+    B_linar[2]=1;
+    x_solve[0]=0.0;
+    x_solve[1]=0.0;
+    x_solve[2]=0.0;
+    Gauss(A_linar,B_linar,x_solve,3);
+    cout<<"Gauss: "<<x_solve[0]<<"   "<<x_solve[1]<<"    "<<x_solve[2]<<'\n';
     data>>n>>T>>P;
     s_liq_i     =   (double*)malloc(n*sizeof(double));
     s_gas_i     =   (double*)malloc(n*sizeof(double));
