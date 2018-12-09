@@ -177,8 +177,9 @@ void cube_solver(double E2,double E1,double E0,double root[3],int &count_double_
         {
             //2 matching roots
             count_double_root=3;
-            a.real()=q/2.0;
-            a.imag()=0.0;
+	    a=complex<double>(q/2.0,0);
+            //a.real()=q/2.0;
+            //a.imag()=0.0;
             cube_root(a,temp_root1);
             cube_root(a,temp_root2);
             root[0]=-2.0*cbrt((q/2.0))-E2/3.0;
@@ -200,11 +201,13 @@ void cube_solver(double E2,double E1,double E0,double root[3],int &count_double_
         {
             //3 real different root
             count_double_root=3;
-            a.real()=-q/2.0;
-            a.imag()=sqrt((-Q));
+	    a=complex<double>(-q/2.0,sqrt((-Q)));
+            //a.real()=-q/2.0;
+            //a.imag()=sqrt((-Q));
             cube_root(a,temp_root1);
-            a.real()=-q/2.0;
-            a.imag()=-sqrt((-Q));
+	    a=complex<double>(-q/2.0,-sqrt((-Q)));
+            //a.real()=-q/2.0;
+            //a.imag()=-sqrt((-Q));
             cube_root(a,temp_root2);
             root[0]=temp_root1[0].real()+temp_root2[0].real()-E2/3.0;
             root[1]=temp_root1[1].real()+temp_root2[1].real()-E2/3.0;
@@ -220,10 +223,11 @@ void calc_phi(double C,double * S_i,double *B_i,double* Phi_i,double m1,double m
 
     for(int i=0;i<n;i++)
     {
-        Ln_phi_i[i]=log(C/(Z-B))+M*A/((m1-m2)*B)*(2.0*S_i[i]/A-B_i[i]/B)+B_i[i]*(Z-C)/B;
+        Ln_phi_i[i]=log(C/abs(Z-B))+M*A/((m1-m2)*B)*(2.0*S_i[i]/A-B_i[i]/B)+B_i[i]*(Z-C)/B;
         Phi_i[i]=exp(Ln_phi_i[i]);
-        //cout<<"Z"<<Z<<"   "<< B<<'\n';
+        //cout<<Z<<"   "<< B<<'\n';
     }
+	free(Ln_phi_i);
 }
 void coeff(double &E2,double &E1,double &E0,double m1,double m2,double A,double B,double C)
 {
@@ -348,6 +352,16 @@ void practical_ln_phi(double M1,double M2,double A,double B,double C,double Z,do
            // cout<<practical_ln_phi_practical_K[i][j];
         } cout<<'\n';cout<<'\n';cout<<'\n';
     }
+    for(int i=0;i<n;i++)
+    {
+
+        
+	    free(practical_ln_phi_practical_c[i]);
+        
+        
+    } 
+free(practical_ln_phi_practical_c);
+
 }
 void A_linar_calc(double **A_linar_ij,double** practical_ln_phi_practical_K_liq,double **practical_ln_phi_practical_K_gas,double* K_i,int n)
 {
@@ -590,8 +604,9 @@ int main()
     cout<<"Kriterij: "<<kriterij<<'\n';
     complex<double> a,root[3];
     double root_d[3];
-    a.real()=0.0;
-    a.imag()=-1.0;
+	a=complex<double>(0.0,-1);
+    //a.real()=0.0;
+    //a.imag()=-1.0;
     cube_root(a,root);
      cube_solver(-8.0,21.0,-18.0,root_d,i);
     cout<<root_d[0]<<"   "<<'\n';
@@ -601,5 +616,57 @@ int main()
     cout<<root[1].real()<<"   "<<root[1].imag()<<'\n';
     cout<<root[2].real()<<"   "<<root[2].imag()<<'\n';
     cout<<p_r[0];
+
+
+
+
+
+    free(dz_dc_liq   );
+    free(dz_dc_gas   );
+    free(B_linar     );
+    free(x_solve     );
+    free(s_liq_i     );
+    free(s_gas_i     );
+    free(phi_liq_i   );
+    free(phi_gas_i   );
+    free(p           );
+    free(p_crit      );
+    free(p_r         );
+    free(t           );
+    free(t_crit      );
+    free(t_r         );
+    free(omega       );
+    free(Omega_A     );
+    free(Omega_B     );
+    free(A_i         );
+    free(B_i         );
+    free(x           );
+    free(y           );
+    free(z           );
+    free(c           );
+    free(k_i         );
+
+
+    for(i=0;i<n;i++)
+    {
+      
+        free(A_ij[i]);
+        free(Betta[i]);
+        free(A_linar[i]);
+        free(dy_dK[i]  );
+        free(dx_dK[i]  );
+        free(d_ln_phi_dK_liq[i] );
+        free(d_ln_phi_dK_gas[i] );
+    }
+	free(A_ij);
+        free(Betta);
+        free(A_linar);
+        free(dy_dK  );
+        free(dx_dK  );
+        free(d_ln_phi_dK_liq );
+        free(d_ln_phi_dK_gas );
+
+
+
     return 0;
 }
