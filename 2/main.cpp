@@ -233,7 +233,7 @@ void coeff(double &E2,double &E1,double &E0,double m1,double m2,double A,double 
     E0=-A*B-m1*m2*B*B*(B+C);
    cout<<"E   "<<E2<<" "<<E1<<" "<<E0<<'\n';
 }
-void calc_c(double *c_i,double c,int n)
+void calc_c(double *c_i,double &c,int n)
 {
     c=0.0;
     for(int i=0;i<n;i++)
@@ -489,7 +489,6 @@ int main()
         t[i]=T;
         p[i]=P;
         k_i[i]=(i<n/2)?(0.5):(2.0);
-        cout<<k_i[i]<<z[i]<<'\n';
 
         A_ij[i]                 =   (double*)malloc(n*sizeof(double));
         Betta[i]                =   (double*)malloc(n*sizeof(double));
