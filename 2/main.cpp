@@ -71,9 +71,7 @@ void calc_A_i(double* Omega_A,double* P_r,double* T_r,double *A_i ,int n)
     for(int i=0; i<n;i++)
     {
         A_i[i]=Omega_A[i]*P_r[i]/(T_r[i]*T_r[i]);
-        cout<<A_i[i]<<'\n';
     }
-    cout<<'\n';
 }
 void calc_B_i(double* Omega_B,double* P_r,double* T_r,double *B_i ,int n)
 {
@@ -126,6 +124,7 @@ void calc_x(double *k_i,double *z,double*x, double v,int n)
     {
         x[i]=z[i]/(1+(k_i[i]-1)*v);
     }
+
 }
 void calc_y(double *k_i,double *z,double*y, double v,int n)
 {
@@ -155,7 +154,7 @@ void normalization_c(double *c,int n)
         c[i]=c[i]/sum;
     }
 }
-void cube_solver(double E2,double E1,double E0,double root[3],int count_double_root)
+void cube_solver(double E2,double E1,double E0,double root[3],int &count_double_root)
 {
     double p,q;
     p=(3.0*E1-E2*E2)/3.0;                   //canonical form
@@ -223,15 +222,15 @@ void calc_phi(double C,double * S_i,double *B_i,double* Phi_i,double m1,double m
     {
         Ln_phi_i[i]=log(C/(Z-B))+M*A/((m1-m2)*B)*(2.0*S_i[i]/A-B_i[i]/B)+B_i[i]*(Z-C)/B;
         Phi_i[i]=exp(Ln_phi_i[i]);
-        cout<<Z<<'\n';
+        //cout<<"Z"<<Z<<"   "<< B<<'\n';
     }
 }
 void coeff(double &E2,double &E1,double &E0,double m1,double m2,double A,double B,double C)
 {
     E2=(m1+m2)*B-(B+C);
-    E1=A+m1*m2*B*B;-(m1+m2)*B*(B+C);
+    E1=A+m1*m2*B*B-(m1+m2)*B*(B+C);
     E0=-A*B-m1*m2*B*B*(B+C);
-   cout<<"E   "<<E2<<" "<<E1<<" "<<E0<<'\n';
+
 }
 void calc_c(double *c_i,double &c,int n)
 {
@@ -240,7 +239,7 @@ void calc_c(double *c_i,double &c,int n)
     {
         c+=c_i[i];
     }
-    cout<<"C "<<c;
+
 }
 void calc_si(double* si,double** A_ij,double *c,int n)
 {
@@ -309,24 +308,32 @@ void practical_Z(double Z,double M1,double M2,double E2,double E1,double A,doubl
 }
 void practical_ln_phi(double M1,double M2,double A,double B,double C,double Z,double *B_i,double* S_i,double *practical_Z_practical_C,double **practical_c_practical_K,double **practical_ln_phi_practical_K,double **A_ij, int n)
 {
-    double W1,W2,W3,W4,W5,W6,M;
+    double W1,W2,W3,W4,W5,W6,M,W7;
     double **practical_ln_phi_practical_c;
     practical_ln_phi_practical_c        =   (double**)malloc(n*sizeof(double*));
+    for(int i=0;i<n;i++)
+    {
+        practical_ln_phi_practical_c[i]         =   (double*)malloc(n*sizeof(double));}
     W1=A/((M1-M2)*B);
     M=log((Z+M2*B)/(Z+M1*B));
     for(int i=0;i<n;i++)
     {
-        practical_ln_phi_practical_c[i]         =   (double*)malloc(n*sizeof(double));
+//cin>>W7;
         W5=2.0*S_i[i]/A-B_i[i]/B;
+
         for(int j=0;j<n;j++)
         {
-            W2=1.0/C-(practical_Z_practical_C[j]-B_i[j])/(Z-B);
+            W2=1.0/C-(practical_Z_practical_C[j]-B_i[j])/Z-B;
+
             W3=(practical_Z_practical_C[j]+M2*B_i[j])/(Z+M2*B)-(practical_Z_practical_C[j]+M1*B_i[j])/(Z+M1*B);
             W4=M*(2.0*S_i[j]*B-A*B_i[j])/((M1-M2)*B*B);
-            W6=(B_i[i]*B_i[j])/(B*B);
+            W6=(B_i[i]*B_i[j])/(B*B);//cout<<W6;
             practical_ln_phi_practical_c[i][j]=W2+W1*W5*W3+W4*W5+M*W1*((2.0*A*A_ij[i][j]-4.0*S_i[i]*S_i[j])/(A*A)+W6)-(Z-C)*W6+(B_i[i]/B)*(practical_Z_practical_C[j]-1);
+            cout<< practical_ln_phi_practical_c[i][j]<<" ";
         }
-    }
+        cout<<'\n';
+    } cout<<'\n';cout<<'\n';cout<<'\n';
+
     for(int i=0;i<n;i++)
     {
         for(int j=0;j<n;j++)
@@ -337,7 +344,9 @@ void practical_ln_phi(double M1,double M2,double A,double B,double C,double Z,do
             {
                 practical_ln_phi_practical_K[i][j]+=practical_ln_phi_practical_c[i][k]*practical_c_practical_K[k][j];
             }
-        }
+            cout<< practical_ln_phi_practical_K[i][j]<<" ";
+           // cout<<practical_ln_phi_practical_K[i][j];
+        } cout<<'\n';cout<<'\n';cout<<'\n';
     }
 }
 void A_linar_calc(double **A_linar_ij,double** practical_ln_phi_practical_K_liq,double **practical_ln_phi_practical_K_gas,double* K_i,int n)
@@ -427,7 +436,6 @@ int main()
 {
     ifstream data;
     data.open("data.txt");
-    cout<<delta(1,0)<<" "<<delta(1,1);
     double *p,*p_crit,*p_r,*s_liq_i;
     double *t,*t_crit,*t_r,*s_gas_i;
     double *omega,*Omega_A,*Omega_B,*A_i,*B_i;
@@ -504,6 +512,7 @@ int main()
 
     normalization_c(z,n);
     calc_V(k_i,z,v,n);
+    cout<<"v"<<v<<'\n';
     calc_x(k_i,z,x,v,n);
     calc_y(k_i,z,y,v,n);
 
@@ -527,8 +536,8 @@ int main()
     calc_c(y,C_gas,n);
     coeff(E2_liq,E1_liq,E0_liq,m1,m2,A_liq,B_liq,C_liq);
     coeff(E2_gas,E1_gas,E0_gas,m1,m2,A_gas,B_gas,C_gas);
-    cout<<"E   "<<E2_liq<<" "<<E1_liq<<" "<<E0_liq<<'\n';
-    cout<<"E   "<<E2_gas<<" "<<E1_gas<<" "<<E0_gas<<'\n';
+
+
     cube_solver(E2_liq,E1_liq,E0_liq,root_liq,count_root_liq);
     cube_solver(E2_gas,E1_gas,E0_gas,root_gas,count_root_gas);
     z_liq=max(max(root_liq[0],root_liq[1]),root_liq[2]);
@@ -539,14 +548,18 @@ int main()
     z_gas=max(max(root_gas[0],root_gas[1]),root_gas[2]);
     calc_si(s_liq_i,A_ij,x,n);
     calc_si(s_gas_i,A_ij,y,n);
-    cout<<"Z   "<<root_gas[0]<<" "<<root_gas[1]<<" "<<root_gas[2]<<'\n';
-    cout<<"E   "<<E2_liq<<" "<<E1_liq<<" "<<E0_liq<<'\n';
+
+
     calc_phi(C_liq,s_liq_i,B_i,phi_liq_i,m1,m2,z_liq,B_liq,A_liq,n);
     calc_phi(C_gas,s_gas_i,B_i,phi_gas_i,m1,m2,z_gas,B_gas,A_gas,n);
+    for(int w=0;w<n;w++)
+    {cout<<phi_liq_i[w]<<"  "<<phi_gas_i[w]<<'\n';
+    }
     double kriterij=0.0;
     for(int k=0;k<n;k++)
     {
-        kriterij+=abs((x[i]*phi_liq_i[i])/(y[i]*phi_gas_i[i])-1.0);
+        kriterij+=abs((x[k]*phi_liq_i[k])/(y[k]*phi_gas_i[k])-1.0);
+
     }
     cout<<"Kriterij: "<<kriterij<<'\n';
     if(kriterij>EPSILON)
@@ -556,11 +569,14 @@ int main()
         practical_liq(z,k_i,v,dx_dK,n);
         practical_gas(z,k_i,v,dy_dK,n);
         cout<<"phi_i:\n";
-    for(int w=0;w<n;w++)
-    {cout<<phi_liq_i[w]<<"  "<<phi_gas_i[w]<<'\n';
+    for(int nya=0;nya<n;nya++){for(int w=0;w<n;w++)
+    {
+        cout<<dx_dK[nya][w]<<"  "<<dy_dK[nya][w]<<'\n';
+    }cout<<'\n';
     }
     cin>>templ;
         practical_ln_phi(m1,m2,A_liq,B_liq,C_liq,z_liq,B_i,s_liq_i,dz_dc_liq,dx_dK,d_ln_phi_dK_liq,A_ij,n);
+            cin>>templ;
         practical_ln_phi(m1,m2,A_gas,B_gas,C_gas,z_gas,B_i,s_gas_i,dz_dc_gas,dy_dK,d_ln_phi_dK_gas,A_ij,n);
         A_linar_calc(A_linar,d_ln_phi_dK_liq,d_ln_phi_dK_gas,k_i,n);
         B_linar_calc(B_linar,phi_liq_i,phi_gas_i,k_i,n);
@@ -569,7 +585,7 @@ int main()
     }
     cout<<"k_i:\n";
     for(int w=0;w<n;w++)
-    {cout<<k_i[w]<<z[w]<<'\n';
+    {cout<<"test"<<k_i[w]<<z[w]<<'\n';
     }cin>>templ;
     cout<<"Kriterij: "<<kriterij<<'\n';
     complex<double> a,root[3];
